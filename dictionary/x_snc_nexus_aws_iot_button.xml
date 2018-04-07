@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<database>
+    <element extends="x_snc_nexus_iot_registry" label="AWS IoT Button" max_length="40" name="x_snc_nexus_aws_iot_button" type="collection">
+        <element label="Voltage" max_length="40" name="voltage" type="integer"/>
+    </element>
+</database>

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update sys_domain="global" table="sys_script">
+    <sys_script action="INSERT_OR_UPDATE">
+        <abort_action>false</abort_action>
+        <access>package_private</access>
+        <action_delete>false</action_delete>
+        <action_insert>true</action_insert>
+        <action_query>false</action_query>
+        <action_update>false</action_update>
+        <active>true</active>
+        <add_message>false</add_message>
+        <advanced>true</advanced>
+        <change_fields>false</change_fields>
+        <client_callable>false</client_callable>
+        <collection>x_snc_nexus_iot_event</collection>
+        <condition/>
+        <description/>
+        <execute_function>false</execute_function>
+        <filter_condition/>
+        <is_rest>false</is_rest>
+        <message/>
+        <name>Action Lookup</name>
+        <order>100</order>
+        <priority>100</priority>
+        <rest_method/>
+        <rest_method_text/>
+        <rest_service/>
+        <rest_service_text/>
+        <rest_variables/>
+        <role_conditions/>
+        <script><![CDATA[(function executeRule(current, previous /*null when async*/) {
+
+	gs.info("BR: Action Lookup started");
+
+	var eventTable = current.getTableName();
+	var eventID = current.getValue('sys_id');
+	var lookupTable = 'x_snc_nexus_lookup';
+	
+	// Use the parent class (iot_event) to tell us which
+	// table and sys_id to use for the comparison
+	// This makes it work across multiple device types
+	//
+	var eventGr = new GlideRecord(eventTable);
+	if (!eventGr.get(eventID)) {
+		gs.error('ERROR: Action lookup failure reading record from child class');
+		gs.error('Table=' + current.getTableName() + ' sys_id=' + eventID);
+	}
+	var lookupGr = new GlideRecord(lookupTable);
+	lookupGr.addQuery('active', true);
+	lookupGr.query();
+
+	gs.info("BR: Action Lookup: count=" + lookupGr.getRowCount() + ' event=' + eventGr.getDisplayValue());
+
+	while (lookupGr.next()) {
+
+		var match = GlideFilter.checkRecord(eventGr, lookupGr.getValue('condition'));
+
+		if (match) {
+			var advanced = lookupGr.getValue('advanced') == 1;
+
+			if (advanced) {
+				var evaluator = new GlideScopedEvaluator();
+				evaluator.evaluateScript(lookupGr, 'script');
+				gs.info('BR Action Lookup : script run');
+			} else {
+				var recGr = new GlideRecord(lookupGr.getValue('table'));
+				recGr.newRecord();
+				recGr.applyEncodedQuery(lookupGr.getValue('field_values'));
+				recGr.insert();
+				gs.addInfoMessage('Record created: ' + recGr.getDisplayValue());
+
+			}
+			
+		}
+
+	}
+
+})(current, previous);]]></script>
+        <sys_class_name>sys_script</sys_class_name>
+        <sys_created_by>chuck.tomasi</sys_created_by>
+        <sys_created_on>2018-04-07 22:55:49</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_domain>global</sys_domain>
+        <sys_domain_path>/</sys_domain_path>
+        <sys_id>bbca5bcadb91d300465bf8231f96199a</sys_id>
+        <sys_mod_count>1</sys_mod_count>
+        <sys_name>Action Lookup</sys_name>
+        <sys_overrides/>
+        <sys_package display_value="Nexus" source="x_snc_nexus">f00d2902dbdd9300465bf8231f9619c5</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Nexus">f00d2902dbdd9300465bf8231f9619c5</sys_scope>
+        <sys_update_name>sys_script_bbca5bcadb91d300465bf8231f96199a</sys_update_name>
+        <sys_updated_by>chuck.tomasi</sys_updated_by>
+        <sys_updated_on>2018-04-07 23:02:51</sys_updated_on>
+        <template/>
+        <when>async</when>
+    </sys_script>
+    <sys_translated_text action="delete_multiple" query="documentkey=bbca5bcadb91d300465bf8231f96199a"/>
+</record_update>

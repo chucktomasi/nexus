@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<database>
+    <element extends="x_snc_nexus_iot_event" label="Tag scan" max_length="40" name="x_snc_nexus_tag_scan" type="collection">
+        <element label="Action" max_length="40" name="action" type="string"/>
+        <element display="true" label="Tag" max_length="32" name="tag" reference="x_snc_nexus_nfc_tag" type="reference"/>
+        <index name="index">
+            <element name="tag"/>
+        </index>
+    </element>
+</database>
